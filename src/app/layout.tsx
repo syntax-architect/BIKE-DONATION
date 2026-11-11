@@ -22,6 +22,11 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ||
+      process.env.RENDER_EXTERNAL_URL ||
+      "https://bike-donation.onrender.com",
+  ),
   title: "The People's Apache RR 310 — Lock Your Name, Couple Tag, or @Page",
   description:
     "Lock your Solo tag, Bro/Couple Lock, or clickable @Instagram link on a 38 HP TVS Apache RR 310 wrap from ₹10 — plus download your official Story Certificate.",
