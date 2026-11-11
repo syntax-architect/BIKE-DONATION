@@ -1,6 +1,7 @@
 // ── The People's Apache RR310 — shared domain constants ──────────────────────
 
 export type ZoneId = "BELLY" | "FAIRING" | "TANK" | "WINGLETS" | "COWL";
+export type ClaimMode = "SOLO" | "COUPLE" | "PROMO";
 
 export interface ZoneConfig {
   id: ZoneId;
@@ -26,21 +27,21 @@ export const ZONES: ZoneConfig[] = [
     tierName: "Aero Winglet Crew",
     price: 500,
     capacity: 40,
-    color: "#38BDF8",
-    print: "Your name etched on BOTH winglets + a custom 15-char call sign. The rarest aero real estate on the bike.",
+    color: "#F87171",
+    print: "Your name or brand etched on BOTH winglets + clickable promo link on the Wrap Wall.",
     desc: "Downforce blades. Only 40 exist. Ever.",
     marker: { x: 788, y: 242 },
     labelPos: { left: "70%", top: "11%" },
   },
   {
     id: "TANK",
-    label: "Fuel Tank — Pilot's View",
+    label: "Fuel Tank — Turf War Zone",
     short: "Tank",
     tierName: "Pilot's View",
     price: 100,
     capacity: 500,
-    color: "#E11D48",
-    print: "Name + @handle on the tank, right under the rider's hands — the most photographed panel on the bike.",
+    color: "#EF4444",
+    print: "Name, Couple Lock, or @Page on the tank — the most photographed panel + decides the City Turf War.",
     desc: "The panel every camera zooms into.",
     marker: { x: 560, y: 284 },
     labelPos: { left: "45%", top: "21%" },
@@ -49,12 +50,12 @@ export const ZONES: ZoneConfig[] = [
     id: "FAIRING",
     label: "Side Racing Fairing",
     short: "Fairing",
-    tierName: "High Visibility",
+    tierName: "Creator Billboard",
     price: 50,
     capacity: 2000,
-    color: "#10B981",
-    print: "Name + @handle printed on the side racing fairing — high-visibility placement in every pan & track photo.",
-    desc: "Prime billboard inches, pocket money price.",
+    color: "#E2E8F0",
+    print: "Clickable @handle / brand backlink tile + printed large on the side racing fairing in every Reel.",
+    desc: "Clickable backlink + prime fairing space.",
     marker: { x: 764, y: 308 },
     labelPos: { right: "1%", top: "46%" },
   },
@@ -65,9 +66,9 @@ export const ZONES: ZoneConfig[] = [
     tierName: "The People's Grid",
     price: 10,
     capacity: 12000,
-    color: "#A1A1AA",
-    print: "Your name (or @handle) in the people's grid on the belly pan & fender — thousands of names, one swarm.",
-    desc: "₹10 in. Your name rides forever.",
+    color: "#94A3B8",
+    print: "Solo tag or Couple/Bro Lock printed permanently in the grid + Official Story Certificate.",
+    desc: "₹10–₹20 in. Instant Story Pass + permanent print.",
     marker: { x: 688, y: 398 },
     labelPos: { left: "52%", top: "84%" },
   },
@@ -79,7 +80,7 @@ export const ZONES: ZoneConfig[] = [
     price: 1000,
     capacity: 12,
     color: "#F59E0B",
-    print: "Full name + handle + punchline in the largest font on the rear aerocowl, plus a permanent Hall of Fame pin.",
+    print: "Giant brand/couple/creator callout on the rear aerocowl + Reel shoutout + clickable VIP link.",
     desc: "12 slots. The name everyone reads.",
     marker: { x: 248, y: 274 },
     labelPos: { left: "10%", top: "30%" },
@@ -91,6 +92,34 @@ export const ZONE_MAP: Record<ZoneId, ZoneConfig> = Object.fromEntries(
 ) as Record<ZoneId, ZoneConfig>;
 
 export const TARGET = 400000;
+export const FOUNDER_LIMIT = 500;
+
+export const LIVE_MODE = process.env.NEXT_PUBLIC_LIVE_MODE !== "false";
+
+export const RIDER_PROFILE = {
+  name: process.env.NEXT_PUBLIC_RIDER_NAME || "Syntax Rider",
+  city: process.env.NEXT_PUBLIC_RIDER_CITY || "India",
+  ig: process.env.NEXT_PUBLIC_RIDER_IG || "@peoplesrr310",
+  day: Math.max(1, Number(process.env.NEXT_PUBLIC_CHALLENGE_DAY || "1") || 1),
+};
+
+export const CLAN_CITIES = [
+  "Mumbai",
+  "Delhi NCR",
+  "Bengaluru",
+  "Kolkata",
+  "Pune",
+  "Chennai",
+  "Hyderabad",
+  "Jaipur",
+] as const;
+
+export const WRAP_LIVERY_OPTIONS = [
+  { id: "racing-red", label: "Racing Red + White Names", desc: "Classic TVS factory track look" },
+  { id: "stealth-carbon", label: "Stealth Carbon + Neon Red", desc: "Matte black vinyl with crimson type" },
+  { id: "tricolor-bto", label: "BTO White & Red Tricolor", desc: "Factory race-replica livery" },
+] as const;
+
 export const UPI_VPA = process.env.NEXT_PUBLIC_UPI_VPA || "peoplesapache@upi";
 export const UPI_PAYEE_NAME = process.env.NEXT_PUBLIC_UPI_NAME || "Apache310Wrap";
 
@@ -102,36 +131,32 @@ export const COST_BREAKDOWN = [
 
 export const FAQS = [
   {
-    q: "Is this real?",
-    a: "100%. A real, road-legal TVS Apache RR 310 (BTO Racing Edition) gets bought, wrapped and ridden. Delivery day is livestreamed, the full wrap installation is filmed, and every contributor's name/handle is documented on 4K camera as it goes onto the machine. The ledger on this page mirrors every claim.",
+    q: "How do I pay? Do I have to type any UTR number?",
+    a: "Zero UTR hassle. Pick your mode, zone, and amount, then complete payment in 1 tap inside Razorpay Checkout (GPay / PhonePe / Paytm / UPI / Cards). Our webhook confirms your slot automatically and unlocks your Story Certificate.",
   },
   {
-    q: "What if the goal isn't reached?",
-    a: "Nothing disappears. Every rupee stays locked in a public ledger with weekly statement drops. If we fall short of ₹4,00,000, the community votes in the open: extend the campaign, scale the wrap area, or refund every contributor pro-rata from the locked pool. No silent reroutes, ever.",
+    q: "What do the First 500 Founder Batch #01 spots get?",
+    a: "Every verified slot in Founder Batch #01 (first 500 spots) gets 2× vinyl wrap area FREE (so ₹10 = 4 cm², ₹20 = 8 cm²) plus a clickable external social link on the Wrap Wall.",
   },
   {
-    q: "How will my name actually be printed?",
-    a: "A professional vinyl shop prints the full wrap from our vector layout. Every ₹10 slot is a named cell in the grid — no random initials. Before printing, we post a proof screenshot of the complete wrap layout so you can find your own handle on the bike.",
+    q: "What is Bro / Couple Lock vs. Promote @Page?",
+    a: "Bro / Couple Lock prints two names together (e.g. ROHAN × PRIYA) on the bike and gives you an official downloadable Story Certificate to share. Promote @Page turns your Wrap Wall tile into an active clickable link to your Instagram, YouTube, X, or portfolio.",
   },
   {
-    q: "Can I choose what's written?",
-    a: "Yes — your name, your @handle, or a 15-character punchline for the higher tiers. Keep it clean: slurs, brands and profanity are auto-rejected at verification and you'll be asked to resubmit your line.",
+    q: "How will my name actually be printed on the RR 310?",
+    a: "A vinyl wrap shop prints the complete vector wrap directly from our verified ledger CSV. Every slot is a real named cell on the panel, and the wrap installation is filmed in 4K so you can find your handle.",
   },
   {
-    q: "How do I pay and how is it verified?",
-    a: "Scan the UPI QR (or tap the intent link) for your exact amount, then paste the 12-digit UTR / transaction ID. The ledger checks it against the live bank statement feed; the moment it matches, your slot lights up and your name enters the ticker.",
-  },
-  {
-    q: "Do I own a piece of the bike?",
-    a: "Legally, no — you own something better for the internet era: permanent, documented recognition on a 4K-filmed track weapon and a founder's spot in Experiment #01. This is a community art/funding experiment, not an investment or equity scheme.",
+    q: "What if the ₹4,00,000 goal isn't reached?",
+    a: "Every rupee is tracked publicly in the Open Ledger below. If we fall short, contributors vote in the open: extend the campaign, print a community wrap project, or refund pro-rata from the locked pool.",
   },
 ];
 
 export const PROMISES = [
-  { icon: "video", title: "Delivery-Day Livestream", text: "The bike unboxing and handover goes live. No edits, no cuts." },
-  { icon: "camera", title: "4K Wrap Installation Film", text: "Every panel, every name, filmed in macro detail as it's laid." },
-  { icon: "users", title: "Every Handle Documented", text: "A public roll-call page lists all contributors, forever." },
-  { icon: "lock", title: "Locked Public Ledger", text: "Weekly statements. Every rupee traceable until wrap day." },
+  { icon: "video", title: "1-Tap Razorpay + Webhook", text: "No UTR typing. Automatic webhook confirmation." },
+  { icon: "camera", title: "Instant Story Certificate", text: "Download your unwatermarked PNG right after payment." },
+  { icon: "users", title: "Clickable Wrap Directory", text: "Every handle/URL links to your IG, YouTube, or X." },
+  { icon: "lock", title: "2× Vinyl for First 500", text: "Founder Batch #01 gets double wrap area free." },
 ];
 
 export const TIERS = [
@@ -142,20 +167,17 @@ export const TIERS = [
   { amount: 1000, zone: "COWL" as ZoneId, badge: "VIP" },
 ];
 
-/** Quick-pick rupee amounts in the claim modal (highlights ₹10 & ₹20 micro-entries) */
 export const QUICK_AMOUNTS = [10, 20, 50, 100, 500, 1000] as const;
 
-/** Wrap real-estate math: ₹5 buys 1 cm² of vinyl (min 2 cm²) */
-export function wrapAreaCm2(amount: number): number {
-  return Math.max(2, Math.round(amount / 5));
+/** Wrap real-estate math: ₹5 buys 1 cm² of vinyl (min 2 cm²), 2× free for First 100 Founders */
+export function wrapAreaCm2(amount: number, isFounder = false): number {
+  const base = Math.max(2, Math.round(amount / 5));
+  return isFounder ? base * 2 : base;
 }
 
 export function formatINR(n: number): string {
-  return new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency: "INR",
-    maximumFractionDigits: 0,
-  }).format(n);
+  const safe = Number.isFinite(n) ? Math.round(n) : 0;
+  return `₹${new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 }).format(safe)}`;
 }
 
 export function formatNum(n: number): string {
@@ -169,4 +191,27 @@ export function zoneForAmount(amount: number): ZoneId {
   if (amount >= 100) return "TANK";
   if (amount >= 50) return "FAIRING";
   return "BELLY";
+}
+
+/** Build a safe clickable external URL from a handle or URL (blocks javascript:/data: XSS) */
+export function sanitizePromoUrl(rawUrl?: string | null, handle?: string | null): string | null {
+  const candidate = (rawUrl || "").trim();
+  if (candidate) {
+    try {
+      const normalized = candidate.startsWith("http://") || candidate.startsWith("https://")
+        ? candidate
+        : `https://${candidate}`;
+      const u = new URL(normalized);
+      if (u.protocol === "https:" || u.protocol === "http:") {
+        return u.toString();
+      }
+    } catch {
+      return null;
+    }
+  }
+  const cleanHandle = (handle || "").trim().replace(/^@+/, "").replace(/[^a-zA-Z0-9._]/g, "");
+  if (cleanHandle.length >= 2) {
+    return `https://instagram.com/${cleanHandle}`;
+  }
+  return null;
 }

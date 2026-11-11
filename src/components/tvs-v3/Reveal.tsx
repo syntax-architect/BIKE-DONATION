@@ -6,7 +6,7 @@ import type { ReactNode } from "react";
 export function Reveal({
   children,
   delay = 0,
-  y = 26,
+  y = 22,
   className,
 }: {
   children: ReactNode;
@@ -20,8 +20,8 @@ export function Reveal({
       className={className}
       initial={reduce ? false : { opacity: 0, y }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-70px" }}
-      transition={{ duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] }}
+      viewport={{ once: true, margin: "-60px" }}
+      transition={{ duration: 0.55, delay, ease: [0.22, 1, 0.36, 1] }}
     >
       {children}
     </motion.div>
@@ -32,7 +32,7 @@ export function SectionHead({
   eyebrow,
   title,
   sub,
-  align = "center",
+  align = "left",
 }: {
   eyebrow: string;
   title: ReactNode;
@@ -41,16 +41,15 @@ export function SectionHead({
 }) {
   return (
     <Reveal className={align === "center" ? "text-center" : "text-left"}>
-      <span className="inline-flex items-center gap-2 rounded-full border border-racing/25 bg-racing/5 px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-racing">
-        <span className="h-1.5 w-1.5 rounded-full bg-racing live-dot" />
+      <div className="font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
         {eyebrow}
-      </span>
-      <h2 className="mt-4 font-display text-3xl font-bold tracking-tight sm:text-4xl lg:text-[2.75rem] lg:leading-[1.08]">
+      </div>
+      <h2 className="mt-2 font-display text-3xl font-bold tracking-tight text-[#F8FAFC] sm:text-4xl lg:leading-[1.1]">
         {title}
       </h2>
       {sub ? (
         <p
-          className={`mt-3 max-w-2xl text-base leading-relaxed text-muted-foreground ${
+          className={`mt-2.5 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base ${
             align === "center" ? "mx-auto" : ""
           }`}
         >

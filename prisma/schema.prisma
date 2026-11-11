@@ -8,16 +8,34 @@ datasource db {
 }
 
 model Contribution {
-  id        String   @id @default(cuid())
-  name      String
-  handle    String?
-  zone      String
-  amount    Int
-  txId      String?  @unique
-  status    String   @default("CONFIRMED")
-  createdAt DateTime @default(now())
+  id                String   @id @default(cuid())
+  name              String
+  partnerName       String?
+  handle            String?
+  linkUrl           String?
+  city              String?
+  mode              String   @default("SOLO")
+  zone              String
+  amount            Int
+  txId              String?  @unique
+  razorpayOrderId   String?  @unique
+  razorpayPaymentId String?  @unique
+  isFounder         Boolean  @default(false)
+  status            String   @default("PENDING")
+  createdAt         DateTime @default(now())
 
   @@index([zone])
   @@index([amount])
+  @@index([city])
+  @@index([status])
   @@index([createdAt])
+}
+
+model WrapVote {
+  id        String   @id @default(cuid())
+  option    String
+  weight    Int      @default(1)
+  createdAt DateTime @default(now())
+
+  @@index([option])
 }

@@ -1,35 +1,48 @@
 "use client";
 
 import { create } from "zustand";
-import type { ZoneId } from "@/lib/tvs/constants";
-import { BASE, BASE_ZONE_SOLD } from "@/lib/tvs/v3";
+import type { ClaimMode, ZoneId } from "@/lib/tvs/constants";
 import type { StatsData } from "@/lib/tvs/types";
 
 export interface FeedItem {
   id: string;
   name: string;
+  partnerName?: string | null;
   handle: string | null;
+  linkUrl?: string | null;
+  city?: string | null;
+  mode?: ClaimMode | string;
   zone: ZoneId;
   amount: number;
+  isFounder?: boolean;
   at: number;
-  sim?: boolean;
 }
 
 interface ClaimState {
   open: boolean;
   sessionId: number;
   zoneId: ZoneId | null;
+  activeZone: ZoneId | null;
   amount: number | null;
   startStep: "details" | "pay";
+  mode: ClaimMode;
   previewName: string;
+  partnerName: string;
   previewHandle: string;
+  city: string;
+  referrer: string | null;
   claimedCode: string | null;
   openClaim: (zone?: ZoneId | null, amount?: number | null, startStep?: "details" | "pay") => void;
   closeClaim: () => void;
+  setActiveZone: (z: ZoneId | null) => void;
   setZone: (z: ZoneId | null) => void;
   setAmount: (a: number | null) => void;
+  setMode: (m: ClaimMode) => void;
   setPreviewName: (name: string) => void;
+  setPartnerName: (name: string) => void;
   setPreviewHandle: (handle: string) => void;
+  setCity: (city: string) => void;
+  setReferrer: (ref: string | null) => void;
   setClaimedCode: (c: string | null) => void;
 }
 
@@ -37,10 +50,15 @@ export const useClaimStore = create<ClaimState>((set) => ({
   open: false,
   sessionId: 0,
   zoneId: null,
+  activeZone: null,
   amount: null,
   startStep: "details",
+  mode: "COUPLE",
   previewName: "",
+  partnerName: "",
   previewHandle: "",
+  city: "Mumbai",
+  referrer: null,
   claimedCode: null,
   openClaim: (zone, amount, startStep) =>
     set((s) => ({
@@ -51,29 +69,26 @@ export const useClaimStore = create<ClaimState>((set) => ({
       startStep: startStep ?? "details",
     })),
   closeClaim: () => set({ open: false, startStep: "details" }),
+  setActiveZone: (activeZone) => set({ activeZone }),
   setZone: (zoneId) => set({ zoneId }),
   setAmount: (amount) => set({ amount }),
+  setMode: (mode) => set({ mode }),
   setPreviewName: (previewName) => set({ previewName }),
+  setPartnerName: (partnerName) => set({ partnerName }),
   setPreviewHandle: (previewHandle) => set({ previewHandle }),
+  setCity: (city) => set({ city }),
+  setReferrer: (referrer) => set({ referrer }),
   setClaimedCode: (claimedCode) => set({ claimedCode }),
 }));
 
 interface LiveState {
   stats: StatsData | null;
-  /** client-side simulated claims this session (kept in memory only) */
-  sim: FeedItem[];
-  /** ms timestamp of last stats refresh */
   fetchedAt: number;
   refresh: () => Promise<void>;
-  pushSim: (item: FeedItem) => void;
 }
 
-let seq = 0;
-export const nextFeedId = () => `f${Date.now().toString(36)}${(seq++).toString(36)}`;
-
-export const useLiveStore = create<LiveState>((set, get) => ({
+export const useLiveStore = create<LiveState>((set) => ({
   stats: null,
-  sim: [],
   fetchedAt: 0,
   refresh: async () => {
     try {
@@ -86,39 +101,36 @@ export const useLiveStore = create<LiveState>((set, get) => ({
       /* telemetry offline — keep last known */
     }
   },
-  pushSim: (item) => set({ sim: [item, ...get().sim].slice(0, 40) }),
 }));
 
-/* ── Derived selectors (pure functions over store state) ─────────────────── */
+/* ── Derived selectors (100% real verified DB numbers, zero fake inflation) ── */
 
-export function totalRaised(stats: StatsData | null, sim: FeedItem[]): number {
-  const db = stats?.totalRaised ?? 0;
-  const simSum = sim.reduce((a, f) => a + f.amount, 0);
-  return BASE.raised + db + simSum;
+export function totalRaised(stats: StatsData | null): number {
+  return stats?.totalRaised ?? 0;
 }
 
-export function totalBackers(stats: StatsData | null, sim: FeedItem[]): number {
-  const db = stats?.contributorCount ?? 0;
-  return BASE.backers + db + sim.length;
+export function totalBackers(stats: StatsData | null): number {
+  return stats?.contributorCount ?? 0;
 }
 
-export function zoneSold(stats: StatsData | null, sim: FeedItem[], zone: ZoneId): number {
-  const db = stats?.zones?.[zone]?.sold ?? 0;
-  const simSum = sim.filter((f) => f.zone === zone).length;
-  return BASE_ZONE_SOLD[zone] + db + simSum;
+export function zoneSold(stats: StatsData | null, zone: ZoneId): number {
+  return stats?.zones?.[zone]?.sold ?? 0;
 }
 
-/** recent feed = simulated + real DB claims, newest first */
-export function recentFeed(stats: StatsData | null, sim: FeedItem[], take = 14): FeedItem[] {
-  const real: FeedItem[] = (stats?.recent ?? []).map((r) => ({
-    id: r.id,
-    name: r.name,
-    handle: r.handle,
-    zone: r.zone as ZoneId,
-    amount: r.amount,
-    at: new Date(r.createdAt).getTime(),
-  }));
-  return [...sim, ...real]
-    .sort((a, b) => b.at - a.at)
+export function recentFeed(stats: StatsData | null, take = 14): FeedItem[] {
+  return (stats?.recent ?? [])
+    .map((r) => ({
+      id: r.id,
+      name: r.name,
+      partnerName: r.partnerName,
+      handle: r.handle,
+      linkUrl: r.linkUrl,
+      city: r.city,
+      mode: r.mode,
+      zone: r.zone as ZoneId,
+      amount: r.amount,
+      isFounder: r.isFounder,
+      at: new Date(r.createdAt).getTime(),
+    }))
     .slice(0, take);
 }

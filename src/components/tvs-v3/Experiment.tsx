@@ -5,20 +5,14 @@ import { useLiveStore } from "@/lib/tvs/store";
 import { Nav } from "./Nav";
 import { Hero } from "./Hero";
 import { Ticker } from "./Ticker";
-import { StatsBand } from "./StatsBand";
 import { BikeShowcase } from "./BikeShowcase";
-import { WrapWall } from "./WrapWall";
-import { Zones } from "./Zones";
 import { Tiers } from "./Tiers";
-import { HowItWorks } from "./HowItWorks";
-import { Telemetry } from "./Telemetry";
+import { WrapWall } from "./WrapWall";
 import { Ledger } from "./Ledger";
 import { Faq } from "./Faq";
-import { FinalCta } from "./FinalCta";
 import { Footer } from "./Footer";
 import { StickyBar } from "./StickyBar";
 import { ClaimModal } from "./ClaimModal";
-import { LiveToasts } from "./LiveToasts";
 
 export function ExperimentV3() {
   const refresh = useLiveStore((s) => s.refresh);
@@ -36,23 +30,26 @@ export function ExperimentV3() {
     <div className="flex min-h-screen flex-col">
       <Nav />
       <main className="flex-1">
+        {/* 1. Hero + Live Ticker */}
         <Hero />
         <Ticker />
-        <StatsBand />
+
+        {/* 2. Interactive Bike Configurator + Unified Tiers */}
         <BikeShowcase />
-        <WrapWall />
-        <Zones />
         <Tiers />
-        <HowItWorks />
-        <Telemetry />
+
+        {/* 3. Clickable Wrap Wall Mosaic */}
+        <WrapWall />
+
+        {/* 4. Combined Public Ledger & Cost Breakdown */}
         <Ledger />
+
+        {/* 5. Minimal FAQ */}
         <Faq />
-        <FinalCta />
       </main>
       <Footer />
       <StickyBar />
       <ClaimModal />
-      <LiveToasts />
     </div>
   );
 }

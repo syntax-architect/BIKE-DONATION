@@ -1,6 +1,6 @@
-// ── V2 psychological trigger layer ──────────────────────────────────────────
-// Milestone unlocks (goal-gradient), everyday anchors (relatability framing),
-// scarcity copy and momentum math shared by all V2 components.
+// ── Psychological trigger layer ──────────────────────────────────────────────
+// Rent-A-Dare milestones (goal-gradient), everyday anchors (relatability framing),
+// scarcity copy, and momentum math shared across components.
 
 import type { ZoneId } from "./constants";
 
@@ -11,50 +11,50 @@ export interface Milestone {
   icon: "flag" | "wind" | "badge-check" | "printer" | "rocket";
 }
 
-/** Goal-gradient effect: visible unlock gates make progress feel inevitable. */
+/** Goal-gradient Rent-A-Dare unlocks: crowd-controlled dares & real rewards. */
 export const MILESTONES: Milestone[] = [
   {
-    at: 100000,
-    label: "Bike Booking Unlocked",
-    desc: "TVS dealership order placed in the community's name.",
+    at: 25000,
+    label: "Dare #1: Street Signboard",
+    desc: "Wear my helmet at a busy crossing holding the Top 20 Founders' names for 3 hours — filmed live.",
     icon: "flag",
   },
   {
-    at: 200000,
-    label: "BTO Aero Pack Confirmed",
-    desc: "Winglets + racing kit bolted onto the order.",
+    at: 50000,
+    label: "Dare #2: Gear Voucher Drop",
+    desc: "1 random verified ₹20+ contributor wins a ₹3,500 riding gear voucher on livestream.",
     icon: "wind",
   },
   {
-    at: 315000,
-    label: "Ex-Showroom Cleared",
-    desc: "The bike is fully paid for. RTO & insurance next.",
+    at: 100000,
+    label: "Dare #3: Dealership Booking",
+    desc: "TVS showroom order placed live + every Founder #001–#100 name read out on camera.",
     icon: "badge-check",
   },
   {
-    at: 380000,
-    label: "Wrap Goes to Print",
-    desc: "Every claimed name is sent to the vinyl press.",
+    at: 200000,
+    label: "Dare #4: Turf War Winner Lock",
+    desc: "Leading city/clan locks the wrap accent color & gets the first Sunday meetup ride stop.",
     icon: "printer",
   },
   {
     at: 400000,
-    label: "Launch-Day Livestream",
-    desc: "Unboxing + wrap reveal, live in 4K. Your name on screen.",
+    label: "Finale: 4K Wrap & Handover",
+    desc: "Every solo, couple & creator tile laminated on the RR 310 + track/pillion pass giveaway.",
     icon: "rocket",
   },
 ];
 
-/** Anchoring: price framed against everyday Indian spending. */
+/** Anchoring: price framed against everyday Indian spending & emotional utility. */
 export const ZONE_ANCHOR: Record<ZoneId, string> = {
-  BELLY: "Less than a cutting chai. Rides forever.",
-  FAIRING: "One samosa party → prime fairing inches.",
-  TANK: "Skip one movie night → own the pilot's tank.",
-  WINGLETS: "One food-delivery order → a rare aero blade.",
-  COWL: "One fancy dinner → your name in the biggest font.",
+  BELLY: "Less than a cutting chai — send a Couple/Bro Lock pass right now.",
+  FAIRING: "One cold coffee → clickable backlink tile on the bike.",
+  TANK: "Skip one movie ticket → boost your City in the Turf War.",
+  WINGLETS: "One delivery order → rare aero blade + creator spotlight.",
+  COWL: "Title Sponsor billboard → giant font + Reel shoutout.",
 };
 
-/** Everyday-cost captions for the tier matrix. */
+/** Everyday-cost captions for the tier matrix & modal quick picks. */
 export const TIER_ANCHOR: Record<number, string> = {
   10: "≈ one cutting chai",
   20: "≈ one samosa + chai",
@@ -108,10 +108,10 @@ export function scarcityLine(sold: number, capacity: number): { text: string; to
 
 /** Social identity framing: what the contributor "becomes" at each tier. */
 export const IDENTITY_LINE: Record<ZoneId, string> = {
-  BELLY: "Grid Founder",
-  FAIRING: "Billboard Backer",
-  TANK: "Pilot's Circle",
-  WINGLETS: "Aero Club",
+  BELLY: "Couple / Grid Lock",
+  FAIRING: "Clickable Billboard",
+  TANK: "Turf War Driver",
+  WINGLETS: "Aero Crew",
   COWL: "Title Sponsor",
 };
 

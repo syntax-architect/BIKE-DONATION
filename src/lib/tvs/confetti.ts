@@ -1,6 +1,6 @@
 "use client";
 
-const PALETTE = ["#E11D48", "#10B981", "#38BDF8", "#F59E0B", "#ffffff"];
+const PALETTE = ["#EF4444", "#DC2626", "#F59E0B", "#E2E8F0", "#94A3B8", "#ffffff"];
 
 export async function burstConfetti() {
   const confetti = (await import("canvas-confetti")).default;

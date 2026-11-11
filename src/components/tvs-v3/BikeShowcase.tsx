@@ -26,8 +26,7 @@ function HotspotPin({ spot, active, onToggle }: { spot: Hotspot; active: boolean
   const zone = ZONE_MAP[spot.zone];
   const open = useClaimStore((s) => s.openClaim);
   const stats = useLiveStore((s) => s.stats);
-  const sim = useLiveStore((s) => s.sim);
-  const sold = zoneSold(stats, sim, zone.id);
+  const sold = zoneSold(stats, zone.id);
   const left = Math.max(0, zone.capacity - sold);
   const scarce = left <= Math.max(2, zone.capacity * 0.2);
 
@@ -57,8 +56,8 @@ function HotspotPin({ spot, active, onToggle }: { spot: Hotspot; active: boolean
             initial={{ opacity: 0, scale: 0.9, y: 6 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.94 }}
-            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-            className="absolute z-30 w-[200px] rounded-2xl border border-white/15 bg-[#0b0d13]/95 p-3.5 shadow-2xl backdrop-blur-xl sm:w-[230px]"
+            transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            className="absolute z-30 w-[210px] rounded-2xl border border-white/[0.08] bg-[#11131A]/95 p-3.5 shadow-2xl backdrop-blur-xl sm:w-[235px]"
             style={{
               ...(spot.side === "l" ? { right: 20 } : { left: 20 }),
               ...(spot.y > 55 ? { bottom: 8 } : { top: 14 }),
@@ -96,10 +95,10 @@ function HotspotPin({ spot, active, onToggle }: { spot: Hotspot; active: boolean
             </div>
             <button
               type="button"
-              onClick={() => open(zone.id)}
+              onClick={() => open(zone.id, zone.price)}
               className="btn-racing mt-3 flex h-8 w-full items-center justify-center gap-1.5 rounded-lg text-xs font-bold text-white active:scale-[0.98]"
             >
-              <Zap className="h-3.5 w-3.5" /> Claim this zone
+              <Zap className="h-3.5 w-3.5" /> Claim {zone.short}
             </button>
           </motion.div>
         )}
@@ -110,10 +109,14 @@ function HotspotPin({ spot, active, onToggle }: { spot: Hotspot; active: boolean
 
 export function BikeShowcase() {
   const [activeId, setActiveId] = useState(GALLERY[0].id);
-  const [openSpot, setOpenSpot] = useState<ZoneId | null>(null);
+  const activeZone = useClaimStore((s) => s.activeZone);
+  const setActiveZone = useClaimStore((s) => s.setActiveZone);
   const stageRef = useRef<HTMLDivElement>(null);
   const previewName = useClaimStore((s) => s.previewName);
+  const partnerName = useClaimStore((s) => s.partnerName);
   const previewHandle = useClaimStore((s) => s.previewHandle);
+  const mode = useClaimStore((s) => s.mode);
+  const city = useClaimStore((s) => s.city);
 
   const canTilt = useSyncExternalStore(
     useCallback((cb: () => void) => {
@@ -148,32 +151,28 @@ export function BikeShowcase() {
 
   return (
     <section id="bike" className="relative scroll-mt-20">
-      <div className="mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
+      <div className="mx-auto w-full max-w-7xl px-4 pt-12 pb-6 sm:px-6 sm:pt-16 lg:px-8">
         <SectionHead
-          eyebrow="Real Bike • Real Wrap • Real Names"
-          title={
-            <>
-              This is the <span className="text-racing">actual RR 310</span> you&rsquo;re funding.
-            </>
-          }
-          sub="Seven real angles of the TVS Apache RR 310 — zero renders, zero unrelated models. Tap the glowing pins on the studio shots to see where your name rides."
+          eyebrow="Interactive RR 310 Configurator"
+          title="Tap any panel on the bike — then pick your tier below."
+          sub="Seven real angles of the TVS Apache RR 310 BTO. Tapping a pin highlights its matching tier card right below."
         />
 
         {/* angle tabs */}
-        <Reveal delay={0.1} className="mt-8">
-          <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:justify-center sm:px-0">
+        <Reveal delay={0.05} className="mt-6">
+          <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:px-0">
             {GALLERY.map((g) => (
               <button
                 key={g.id}
                 type="button"
                 onClick={() => {
                   setActiveId(g.id);
-                  setOpenSpot(null);
+                  setActiveZone(null);
                 }}
                 className={`shrink-0 rounded-full border px-4 py-2 text-xs font-semibold transition-all sm:text-sm ${
                   activeId === g.id
-                    ? "border-racing bg-racing text-white shadow-[0_8px_20px_-8px_rgba(225,29,72,0.7)]"
-                    : "border-border bg-card text-muted-foreground hover:border-racing/40 hover:text-foreground"
+                    ? "border-racing bg-racing text-white shadow-[0_8px_20px_-8px_rgba(220,38,38,0.65)]"
+                    : "border-white/[0.08] bg-[#11131A] text-muted-foreground hover:border-racing/40 hover:text-[#F8FAFC]"
                 }`}
               >
                 {g.label}
@@ -183,12 +182,12 @@ export function BikeShowcase() {
         </Reveal>
 
         {/* stage */}
-        <Reveal delay={0.15} className="mt-6">
+        <Reveal delay={0.1} className="mt-5">
           <div
             ref={stageRef}
             onPointerMove={onMove}
             onPointerLeave={onLeave}
-            className="stage card-pop-lg relative mx-auto aspect-[4/5] w-full max-w-3xl overflow-hidden rounded-[2rem] sm:aspect-auto sm:h-[540px] lg:h-[620px]"
+            className="stage card-pop-lg relative mx-auto aspect-[4/5] w-full max-w-4xl overflow-hidden rounded-[2rem] sm:aspect-auto sm:h-[520px] lg:h-[580px]"
             style={{ perspective: 1400 }}
           >
             <motion.div
@@ -199,7 +198,6 @@ export function BikeShowcase() {
                 transformStyle: "preserve-3d",
               }}
             >
-              {/* photo layers */}
               <AnimatePresence>
                 {GALLERY.map((g) => {
                   const on = g.id === active.id;
@@ -211,19 +209,17 @@ export function BikeShowcase() {
                       className="absolute inset-0"
                       initial={false}
                       animate={{ opacity: on ? 1 : 0, scale: on ? 1 : 1.03 }}
-                      transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                      transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
                       style={{ pointerEvents: on ? "auto" : "none" }}
                     >
                       {isCutout ? (
-                        // Transparent studio cutout centered cleanly with soft elliptical ground shadow
                         <div className="absolute inset-0 flex items-center justify-center px-6 pb-20 pt-8 sm:px-12 sm:pb-24 sm:pt-10">
                           <div
                             className={`relative w-full ${
-                              g.id === "studio-side" ? "max-w-[640px]" : "max-w-[440px]"
+                              g.id === "studio-side" ? "max-w-[640px]" : "max-w-[430px]"
                             }`}
                             style={{ aspectRatio: ASPECTS[g.id] }}
                           >
-                            {/* soft studio floor shadow */}
                             <div
                               aria-hidden
                               className="pointer-events-none absolute inset-x-[8%] -bottom-3 h-7 rounded-full bg-black/75 blur-xl"
@@ -233,18 +229,17 @@ export function BikeShowcase() {
                               alt={`TVS Apache RR 310 — ${g.caption}`}
                               fill
                               loading={g.id === "studio-dyna" ? "eager" : "lazy"}
-                              sizes="(max-width: 640px) 90vw, 560px"
+                              sizes="(max-width: 640px) 90vw, 640px"
                               className="object-contain drop-shadow-[0_24px_36px_rgba(0,0,0,0.7)]"
                             />
-                            {/* hotspots pinned directly inside the exact image aspect box */}
                             {on &&
                               imgSpots.map((spot) => (
                                 <HotspotPin
                                   key={spot.zone}
                                   spot={spot}
-                                  active={openSpot === spot.zone}
+                                  active={activeZone === spot.zone}
                                   onToggle={() =>
-                                    setOpenSpot(openSpot === spot.zone ? null : spot.zone)
+                                    setActiveZone(activeZone === spot.zone ? null : spot.zone)
                                   }
                                 />
                               ))}
@@ -257,7 +252,7 @@ export function BikeShowcase() {
                             alt={`TVS Apache RR 310 — ${g.caption}`}
                             fill
                             loading="lazy"
-                            sizes="(max-width: 768px) 92vw, 768px"
+                            sizes="(max-width: 768px) 92vw, 896px"
                             className="object-cover"
                             style={g.pos ? { objectPosition: g.pos } : undefined}
                           />
@@ -269,15 +264,17 @@ export function BikeShowcase() {
                 })}
               </AnimatePresence>
 
-              {/* live user sticker preview overlay if they typed a name */}
               {previewName.trim().length >= 2 && (
                 <div className="pointer-events-none absolute right-4 top-4 z-10 hidden sm:block">
                   <VinylSticker
                     name={previewName}
+                    partnerName={partnerName}
                     handle={previewHandle}
-                    zone={openSpot ?? "BELLY"}
-                    amount={openSpot ? ZONE_MAP[openSpot].price : 20}
-                    className="w-[215px]"
+                    city={city}
+                    mode={mode}
+                    zone={activeZone ?? "BELLY"}
+                    amount={activeZone ? ZONE_MAP[activeZone].price : 20}
+                    className="w-[230px]"
                   />
                 </div>
               )}
@@ -285,40 +282,32 @@ export function BikeShowcase() {
 
             {/* caption bar */}
             <div className="pointer-events-none absolute inset-x-4 bottom-4 z-10 flex items-end justify-between gap-3">
-              <div className="rounded-xl bg-black/50 px-3.5 py-2.5 backdrop-blur">
+              <div className="rounded-xl bg-black/55 px-3.5 py-2 backdrop-blur">
                 <p className="text-xs font-semibold text-white sm:text-sm">{active.caption}</p>
-                <p className="text-[10px] uppercase tracking-wider text-white/55">
-                  TVS Apache RR 310 • unedited photography
-                </p>
               </div>
               {spots.length > 0 && (
-                <div className="hidden items-center gap-1.5 rounded-full bg-black/50 px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-white/80 backdrop-blur sm:flex">
-                  <Move3d className="h-3.5 w-3.5 text-racing-soft" /> Tap a pin
+                <div className="hidden items-center gap-1.5 rounded-full bg-black/55 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-white/80 backdrop-blur sm:flex">
+                  <Move3d className="h-3.5 w-3.5 text-racing" /> Tap a pin to select zone
                 </div>
               )}
             </div>
           </div>
         </Reveal>
 
-        {/* spec chips */}
-        <Reveal delay={0.2}>
-          <div className="mt-7 flex flex-wrap justify-center gap-2 sm:gap-2.5">
+        {/* spec strip */}
+        <Reveal delay={0.14}>
+          <div className="mt-5 flex flex-wrap justify-center gap-2 sm:gap-2.5">
             {[
               ["38 HP", "peak power"],
               ["29 Nm", "torque"],
               ["312.2 cc", "reverse-inclined DOHC"],
-              ["6-Speed", "with slipper clutch"],
+              ["6-Speed", "slipper clutch"],
               ["174 kg", "kerb weight"],
-              ["Dual-channel ABS", "BTO racing kit"],
+              ["BTO Kit", "aero winglets"],
             ].map(([big, small]) => (
-              <div
-                key={big}
-                className="glass rounded-xl px-4 py-2.5 text-center sm:px-5"
-              >
-                <div className="font-display text-sm font-bold sm:text-base">{big}</div>
-                <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
-                  {small}
-                </div>
+              <div key={big} className="rounded-xl border border-white/[0.08] bg-[#11131A] px-4 py-2 text-center sm:px-5">
+                <div className={`font-display text-sm font-bold ${big === "38 HP" ? "text-racing" : "text-[#F8FAFC]"}`}>{big}</div>
+                <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{small}</div>
               </div>
             ))}
           </div>

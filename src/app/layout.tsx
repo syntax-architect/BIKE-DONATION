@@ -45,10 +45,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f6f7f9" },
-    { media: "(prefers-color-scheme: dark)", color: "#07080c" },
-  ],
+  themeColor: "#090A0F",
   width: "device-width",
   initialScale: 1,
 };
@@ -59,13 +56,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className="dark" suppressHydrationWarning>
       <body
         className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} antialiased bg-background text-foreground font-sans`}
       >
         <ThemeProvider>
           {children}
-          <Toaster position="top-center" richColors closeButton />
+          <Toaster position="top-center" offset={76} richColors closeButton />
         </ThemeProvider>
       </body>
     </html>

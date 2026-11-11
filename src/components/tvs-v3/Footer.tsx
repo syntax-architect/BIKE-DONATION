@@ -1,10 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { Flag } from "lucide-react";
 
 export function Footer() {
   return (
-    <footer className="mt-auto border-t bg-card/50">
+    <footer id="site-footer" className="mt-auto border-t border-white/[0.08] bg-[#11131A]/70">
       <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="flex flex-col items-center justify-between gap-5 sm:flex-row">
           <div className="flex items-center gap-2.5">
@@ -22,12 +23,11 @@ export function Footer() {
           </div>
 
           <nav className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs font-medium text-muted-foreground" aria-label="Footer">
-            <a href="#bike" className="transition-colors hover:text-foreground">The Bike</a>
-            <a href="#zones" className="transition-colors hover:text-foreground">Zones</a>
-            <a href="#pricing" className="transition-colors hover:text-foreground">Pricing</a>
-            <a href="#live" className="transition-colors hover:text-foreground">Live</a>
-            <a href="#transparency" className="transition-colors hover:text-foreground">Ledger</a>
+            <a href="#bike" className="transition-colors hover:text-foreground">Bike &amp; Tiers</a>
+            <a href="#wrap-wall" className="transition-colors hover:text-foreground">Wrap Wall</a>
+            <a href="#ledger" className="transition-colors hover:text-foreground">Public Ledger</a>
             <a href="#faq" className="transition-colors hover:text-foreground">FAQ</a>
+            <Link href="/admin" className="transition-colors hover:text-foreground">Owner Admin</Link>
           </nav>
         </div>
 
