@@ -22,25 +22,25 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "The People's Apache RR310 — Funded by 40,000 Internet Strangers",
+  title: "The People's Apache RR 310 — Lock Your Name, Couple Tag, or @Page",
   description:
-    "Experiment #01: The internet is buying a TVS Apache RR 310 (BTO Racing Edition) — ₹10 at a time. Every contributor's name gets permanently printed on the physical wrap.",
+    "Lock your Solo tag, Bro/Couple Lock, or clickable @Instagram link on a 38 HP TVS Apache RR 310 wrap from ₹10 — plus download your official Story Certificate.",
   keywords: [
     "Apache RR310",
-    "community funded",
-    "experiment",
+    "RR 310 wrap",
+    "couple lock",
     "motorcycle",
-    "crowdfunding",
-    "wrap",
+    "community wrap",
   ],
   icons: {
-    icon: "https://z-cdn.chatglm.cn/z-ai/static/logo.svg",
+    icon: "/logo.svg",
   },
   openGraph: {
-    title: "The People's Apache RR310 — Own a Piece for ₹10",
+    title: "The People's Apache RR 310 — Own a Piece from ₹10",
     description:
-      "A 38 HP track weapon, funded by 40,000 internet strangers. Claim your spot on the wrap.",
+      "Lock your name, Couple tag, or clickable @Page on a 38 HP TVS Apache RR 310 + get an instant Story Certificate.",
     type: "website",
+    images: ["/bike/track-duo.jpg"],
   },
 };
 
