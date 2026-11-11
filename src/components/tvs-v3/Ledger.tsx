@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   Bike,
   Crown,
@@ -48,14 +49,14 @@ export function Ledger() {
         <div className="mt-8 grid gap-5 lg:grid-cols-[1.08fr_1fr]">
           {/* ── Left Column: Combined Tabbed Leaderboard & Claim Feed ── */}
           <Reveal>
-            <div className="card-pop relative flex h-full flex-col overflow-hidden rounded-2xl border border-white/[0.08] bg-[#11131A] p-5 sm:p-6">
+            <div className="card-pop relative flex h-full flex-col overflow-hidden rounded-2xl border border-white/[0.08] bg-[#11131A] p-4 sm:p-6">
               <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[2px] bg-[#EF4444]" />
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="inline-flex rounded-xl border border-white/[0.06] bg-[#090A0F] p-1">
+              <div className="flex flex-wrap items-center justify-between gap-2.5 sm:gap-3">
+                <div className="grid w-full grid-cols-3 rounded-xl border border-white/[0.06] bg-[#090A0F] p-1 sm:inline-flex sm:w-auto">
                   {[
-                    { id: "recent" as Tab, label: "Recent Claims", icon: Flame },
-                    { id: "top" as Tab, label: "Top Hall", icon: Trophy },
-                    { id: "turf" as Tab, label: "City Turf War", icon: Swords },
+                    { id: "recent" as Tab, label: "Recent Claims", shortLabel: "Recent", icon: Flame },
+                    { id: "top" as Tab, label: "Top Hall", shortLabel: "Top Hall", icon: Trophy },
+                    { id: "turf" as Tab, label: "City Turf War", shortLabel: "Turf War", icon: Swords },
                   ].map((t) => {
                     const Icon = t.icon;
                     return (
@@ -63,14 +64,22 @@ export function Ledger() {
                         key={t.id}
                         type="button"
                         onClick={() => setTab(t.id)}
-                        className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition-all ${
+                        className={`relative flex min-h-9 items-center justify-center gap-1.5 rounded-lg px-2 py-1.5 text-[11px] font-bold transition-colors sm:min-h-0 sm:px-3 sm:text-xs ${
                           tab === t.id
-                            ? "bg-[#11131A] text-[#F8FAFC] shadow-sm"
+                            ? "text-[#F8FAFC]"
                             : "text-muted-foreground hover:text-[#F8FAFC]"
                         }`}
                       >
-                        <Icon className="h-3.5 w-3.5 text-racing" />
-                        {t.label}
+                        {tab === t.id && (
+                          <motion.span
+                            layoutId="ledger-tab"
+                            transition={{ type: "spring", stiffness: 360, damping: 28 }}
+                            className="absolute inset-0 rounded-lg bg-[#11131A] shadow-sm"
+                          />
+                        )}
+                        <Icon className="relative z-10 h-3.5 w-3.5 shrink-0 text-racing" />
+                        <span className="relative z-10 truncate sm:hidden">{t.shortLabel}</span>
+                        <span className="relative z-10 hidden sm:inline">{t.label}</span>
                       </button>
                     );
                   })}
@@ -82,6 +91,14 @@ export function Ledger() {
               </div>
 
               <div className="mt-4 flex-1">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={tab}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -6 }}
+                    transition={{ duration: 0.2 }}
+                  >
                 {tab === "recent" && (
                   feed.length > 0 ? (
                     <ul className="space-y-2">
@@ -109,18 +126,19 @@ export function Ledger() {
                                   </span>
                                 )}
                               </div>
-                              <div className="mt-0.5 flex items-center gap-2 text-[11px] text-muted-foreground">
+                              <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px] text-muted-foreground">
                                 {f.linkUrl ? (
                                   <a
                                     href={f.linkUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="inline-flex items-center gap-1 font-mono text-[#E2E8F0] hover:text-racing hover:underline"
+                                    className="inline-flex max-w-full items-center gap-1 truncate font-mono text-[#E2E8F0] hover:text-racing hover:underline"
                                   >
-                                    {f.handle || "Visit link"} <ExternalLink className="h-2.5 w-2.5" />
+                                    <span className="truncate">{f.handle || "Visit link"}</span>
+                                    <ExternalLink className="h-2.5 w-2.5 shrink-0" />
                                   </a>
                                 ) : f.handle ? (
-                                  <span className="font-mono">{f.handle}</span>
+                                  <span className="truncate font-mono">{f.handle}</span>
                                 ) : null}
                                 {f.city ? <span>• {f.city}</span> : null}
                                 <span>• {timeAgo(new Date(f.at).toISOString())}</span>
@@ -158,18 +176,19 @@ export function Ledger() {
                             </span>
                             <div className="min-w-0 flex-1">
                               <div className="truncate text-sm font-semibold text-[#F8FAFC]">{label}</div>
-                              <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
+                              <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px] text-muted-foreground">
                                 {t.linkUrl ? (
                                   <a
                                     href={t.linkUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="inline-flex items-center gap-1 font-mono text-[#E2E8F0] hover:text-racing hover:underline"
+                                    className="inline-flex max-w-full items-center gap-1 truncate font-mono text-[#E2E8F0] hover:text-racing hover:underline"
                                   >
-                                    {t.handle || "Link"} <ExternalLink className="h-2.5 w-2.5" />
+                                    <span className="truncate">{t.handle || "Link"}</span>
+                                    <ExternalLink className="h-2.5 w-2.5 shrink-0" />
                                   </a>
                                 ) : t.handle ? (
-                                  <span className="font-mono">{t.handle}</span>
+                                  <span className="truncate font-mono">{t.handle}</span>
                                 ) : null}
                                 {z && <span>• {z.short}</span>}
                               </div>
@@ -194,12 +213,12 @@ export function Ledger() {
                         const barPct = Math.round((c.totalCm2 / maxCm2) * 100);
                         return (
                           <li key={c.city} className="rounded-xl border border-white/[0.08] bg-[#090A0F]/80 p-3">
-                            <div className="flex items-center justify-between text-xs font-bold">
-                              <span className="flex items-center gap-2 text-[#F8FAFC]">
-                                <MapPin className={`h-3.5 w-3.5 ${idx === 0 ? "text-racing" : "text-muted-foreground"}`} />
-                                {idx + 1}. {c.city}
+                            <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-bold">
+                              <span className="flex min-w-0 items-center gap-2 text-[#F8FAFC]">
+                                <MapPin className={`h-3.5 w-3.5 shrink-0 ${idx === 0 ? "text-racing" : "text-muted-foreground"}`} />
+                                <span className="truncate">{idx + 1}. {c.city}</span>
                               </span>
-                              <span className="tnum font-mono text-racing">
+                              <span className="tnum shrink-0 font-mono text-racing">
                                 {c.totalCm2} cm² • {formatINR(c.totalAmount)}
                               </span>
                             </div>
@@ -221,6 +240,8 @@ export function Ledger() {
                     />
                   )
                 )}
+                  </motion.div>
+                </AnimatePresence>
               </div>
             </div>
           </Reveal>
@@ -257,9 +278,12 @@ export function Ledger() {
                           </div>
                         </div>
                         <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/[0.08]">
-                          <div
+                          <motion.div
                             className="h-full rounded-full bg-racing"
-                            style={{ width: `${pct}%` }}
+                            initial={{ width: 0 }}
+                            whileInView={{ width: `${pct}%` }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
                           />
                         </div>
                       </div>

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { motion } from "framer-motion";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
@@ -81,10 +82,10 @@ function loadRazorpayScript(): Promise<boolean> {
   });
 }
 
-const MODES: Array<{ id: ClaimMode; label: string; icon: typeof Heart }> = [
-  { id: "SOLO", label: "Solo Rider", icon: User },
-  { id: "COUPLE", label: "Bro / Couple", icon: Heart },
-  { id: "PROMO", label: "Promote @Page", icon: Link2 },
+const MODES: Array<{ id: ClaimMode; label: string; shortLabel: string; icon: typeof Heart }> = [
+  { id: "SOLO", label: "Solo Rider", shortLabel: "Solo", icon: User },
+  { id: "COUPLE", label: "Bro / Couple", shortLabel: "Couple", icon: Heart },
+  { id: "PROMO", label: "Promote @Page", shortLabel: "@Page", icon: Link2 },
 ];
 
 export function ClaimModal() {
@@ -92,7 +93,7 @@ export function ClaimModal() {
 
   return (
     <Dialog open={open} onOpenChange={(o) => (o ? undefined : closeClaim())}>
-      <DialogContent className="max-h-[92vh] overflow-y-auto p-0 sm:max-w-lg">
+      <DialogContent className="max-h-[90dvh] overflow-y-auto overscroll-contain p-0 sm:max-w-lg">
         <ClaimModalBody key={sessionId} />
       </DialogContent>
     </Dialog>
@@ -129,7 +130,7 @@ function StoryPassPreview({
     <div className="relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[#11131A] p-3.5 text-[#F8FAFC] shadow-lg">
       <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[2px] bg-[#EF4444]" />
       <div className="flex items-center gap-3">
-        <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl border border-white/[0.08] bg-[#090A0F]">
+        <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-white/[0.08] bg-[#090A0F] sm:h-20 sm:w-20">
           <Image
             src="/bike/studio-dyna-clean.png"
             alt="RR 310 Story Certificate preview"
@@ -139,7 +140,7 @@ function StoryPassPreview({
           />
         </div>
         <div className="min-w-0 flex-1">
-          <div className="flex items-center justify-between gap-2 text-[9px] font-bold uppercase tracking-wider text-racing">
+          <div className="flex flex-wrap items-center justify-between gap-1 text-[9px] font-bold uppercase tracking-wider text-racing">
             <span>Story Certificate Preview</span>
             <span className="rounded border border-white/[0.08] bg-[#090A0F] px-1.5 py-0.5 font-mono text-[#F8FAFC]">
               {z.short} • {cm2} cm²
@@ -220,6 +221,17 @@ function ClaimModalBody() {
   const [confirmedFounder, setConfirmedFounder] = useState<boolean>(isFounderOffer);
 
   const pollTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const nameInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (
+      step === "details" &&
+      typeof window !== "undefined" &&
+      window.matchMedia("(hover: hover) and (pointer: fine)").matches
+    ) {
+      nameInputRef.current?.focus();
+    }
+  }, [step]);
 
   const zoneCfg = ZONE_MAP[zone];
 
@@ -442,15 +454,15 @@ function ClaimModalBody() {
   };
 
   return (
-    <div className="px-5 pb-6 pt-5 sm:px-7">
+    <div className="px-4 pb-6 pt-5 sm:px-7">
       <DialogHeader className="pb-1 text-left">
-        <DialogTitle className="font-display text-xl font-bold tracking-tight">
+        <DialogTitle className="pr-9 font-display text-lg font-bold tracking-tight sm:text-xl">
           {step === "details" && "Customize your slot & Story Certificate"}
           {step === "pay" && `Razorpay Checkout — ${formatINR(amount)}`}
           {step === "success" && "Unlocked & Printed on the Bike!"}
         </DialogTitle>
         {step !== "success" && (
-          <p className="text-xs text-muted-foreground">
+          <p className="pr-6 text-xs text-muted-foreground">
             {isFounderOffer
               ? "Founder Batch #01: 2× wrap area FREE + clickable link. Zero UTR typing."
               : "1-tap Razorpay UPI payment. Confirmed automatically via webhook."}
@@ -459,7 +471,7 @@ function ClaimModalBody() {
       </DialogHeader>
 
       {step === "details" && (
-        <div className="mt-4 space-y-4">
+        <div className="mt-3.5 space-y-3.5 sm:mt-4 sm:space-y-4">
           <div className="grid grid-cols-3 gap-1.5 rounded-xl bg-muted p-1">
             {MODES.map((m) => {
               const Icon = m.icon;
@@ -477,12 +489,20 @@ function ClaimModalBody() {
                       setCustomMode(false);
                     }
                   }}
-                  className={`flex items-center justify-center gap-1.5 rounded-lg py-2 text-xs font-bold transition-all ${
-                    active ? "bg-racing text-white shadow-sm" : "text-muted-foreground hover:text-foreground"
+                  className={`relative flex min-h-10 items-center justify-center gap-1.5 rounded-lg px-1.5 py-2 text-xs font-bold transition-colors sm:min-h-0 sm:px-2 ${
+                    active ? "text-white" : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  <Icon className="h-3.5 w-3.5" />
-                  {m.label}
+                  {active && (
+                    <motion.span
+                      layoutId="modal-mode-pill"
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                      className="absolute inset-0 rounded-lg bg-racing shadow-sm"
+                    />
+                  )}
+                  <Icon className="relative z-10 h-3.5 w-3.5 shrink-0" />
+                  <span className="relative z-10 truncate sm:hidden">{m.shortLabel}</span>
+                  <span className="relative z-10 hidden truncate sm:inline">{m.label}</span>
                 </button>
               );
             })}
@@ -501,6 +521,7 @@ function ClaimModalBody() {
                 <span className="tnum text-[10px] text-muted-foreground">{name.length}/25</span>
               </label>
               <Input
+                ref={nameInputRef}
                 value={name}
                 onChange={(e) => {
                   const v = e.target.value.slice(0, 25);
@@ -509,7 +530,6 @@ function ClaimModalBody() {
                 }}
                 placeholder={mode === "PROMO" ? "e.g. Apex Moto" : "e.g. Rohan"}
                 maxLength={25}
-                autoFocus
               />
             </div>
 
@@ -578,7 +598,7 @@ function ClaimModalBody() {
             <label className="mb-1 block text-xs font-semibold">
               City / College / Clan (Turf War scoreboard)
             </label>
-            <div className="flex gap-2">
+            <div className="flex flex-col gap-2 sm:flex-row">
               <select
                 value={customCityMode ? "__CUSTOM__" : city}
                 onChange={(e) => {
@@ -592,7 +612,7 @@ function ClaimModalBody() {
                     syncCity(e.target.value);
                   }
                 }}
-                className="h-10 rounded-xl border bg-background px-3 text-xs font-semibold outline-none focus:border-racing"
+                className="h-10 w-full rounded-xl border bg-background px-3 text-base font-semibold outline-none focus:border-racing sm:w-auto sm:text-xs"
               >
                 {CLAN_CITIES.map((c) => (
                   <option key={c} value={c}>
@@ -708,7 +728,7 @@ function ClaimModalBody() {
                   setCustomVal(e.target.value);
                   applyAmount(Number(e.target.value));
                 }}
-                className="tnum w-full bg-transparent text-sm font-bold outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                className="tnum w-full bg-transparent text-base font-bold outline-none [appearance:textfield] sm:text-sm [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                 placeholder="100"
                 aria-label="Custom amount"
               />
@@ -733,10 +753,11 @@ function ClaimModalBody() {
             type="button"
             onClick={gotoPay}
             disabled={!detailsValid}
-            className="btn-racing flex h-12 w-full items-center justify-center gap-2 rounded-xl px-4 text-sm font-bold text-white transition-transform active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 sm:text-base"
+            className="btn-racing flex min-h-12 w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold text-white transition-transform active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 sm:text-base"
           >
             <Zap className="h-4.5 w-4.5 shrink-0" />
-            Unlock Unwatermarked Story Pass + Print ({formatINR(amount)})
+            <span className="sm:hidden">Unlock Story Pass + Print ({formatINR(amount)})</span>
+            <span className="hidden sm:inline">Unlock Unwatermarked Story Pass + Print ({formatINR(amount)})</span>
           </button>
         </div>
       )}
@@ -945,7 +966,7 @@ function ClaimModalBody() {
             </button>
           </div>
 
-          <div className="mt-3 flex gap-2">
+          <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
             <button
               type="button"
               onClick={resetAll}

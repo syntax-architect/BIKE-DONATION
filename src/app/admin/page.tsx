@@ -191,23 +191,23 @@ export default function AdminPage() {
         </div>
       </div>
 
-      <div className="mt-6 grid grid-cols-3 gap-3">
-        <div className="glass rounded-2xl p-4">
+      <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
+        <div className="glass col-span-2 rounded-2xl p-4 sm:col-span-1">
           <div className="text-xs text-muted-foreground">Confirmed Raised</div>
-          <div className="mt-1 font-display text-2xl font-bold text-racing">{formatINR(confirmedSum)}</div>
+          <div className="mt-1 font-display text-xl font-bold text-racing sm:text-2xl">{formatINR(confirmedSum)}</div>
         </div>
         <div className="glass rounded-2xl p-4">
           <div className="text-xs text-muted-foreground">Confirmed Slots</div>
-          <div className="mt-1 font-display text-2xl font-bold">{confirmedRows.length}</div>
+          <div className="mt-1 font-display text-xl font-bold sm:text-2xl">{confirmedRows.length}</div>
         </div>
         <div className="glass rounded-2xl p-4">
           <div className="text-xs text-muted-foreground">Pending Orders</div>
-          <div className="mt-1 font-display text-2xl font-bold text-vip-bright">{pendingCount}</div>
+          <div className="mt-1 font-display text-xl font-bold text-vip-bright sm:text-2xl">{pendingCount}</div>
         </div>
       </div>
 
       <div className="glass mt-6 overflow-x-auto rounded-2xl border">
-        <table className="w-full text-left text-xs">
+        <table className="w-full min-w-[680px] text-left text-xs">
           <thead className="border-b bg-muted/50 text-[10px] uppercase tracking-wider text-muted-foreground">
             <tr>
               <th className="p-3">Lock / Name</th>

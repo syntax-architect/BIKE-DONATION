@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { Check, Coffee, Crown, MousePointerClick, QrCode, Rocket, Sparkles, Zap } from "lucide-react";
 import { FOUNDER_LIMIT, TIERS, ZONE_MAP, formatINR, wrapAreaCm2 } from "@/lib/tvs/constants";
 import { IDENTITY_LINE, TIER_ANCHOR, ZONE_ANCHOR } from "@/lib/tvs/psych";
@@ -40,8 +41,8 @@ export function Tiers() {
               <div key={step.label} className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-[#090A0F] px-3.5 py-2.5">
                 <step.icon className="h-4.5 w-4.5 shrink-0 text-racing" />
                 <div className="min-w-0">
-                  <div className="truncate text-xs font-bold text-[#F8FAFC]">{step.label}</div>
-                  <div className="truncate text-[11px] text-muted-foreground">{step.sub}</div>
+                  <div className="text-xs font-bold text-[#F8FAFC]">{step.label}</div>
+                  <div className="text-[11px] leading-snug text-muted-foreground">{step.sub}</div>
                 </div>
               </div>
             ))}
@@ -63,27 +64,27 @@ export function Tiers() {
                 First 500 verified slots get <strong className="text-[#F8FAFC]">2× vinyl wrap area FREE</strong> — ₹10 gives 4 cm², ₹20 gives 8 cm² + instant Story Certificate.
               </p>
             </div>
-            <div className="flex w-full shrink-0 flex-wrap gap-2 sm:w-auto">
+            <div className="grid w-full shrink-0 grid-cols-2 gap-2 sm:flex sm:w-auto">
               <button
                 type="button"
                 onClick={() => openClaim("BELLY", 10, fastStep)}
-                className="inline-flex h-11 flex-1 items-center justify-center gap-1.5 rounded-xl border border-white/[0.12] bg-[#090A0F] px-4 text-sm font-bold text-[#F8FAFC] transition-colors hover:border-racing hover:bg-racing hover:text-white active:scale-[0.98] sm:flex-initial"
+                className="inline-flex h-11 items-center justify-center gap-1.5 rounded-xl border border-white/[0.12] bg-[#090A0F] px-3 text-xs font-bold text-[#F8FAFC] transition-colors hover:border-racing hover:bg-racing hover:text-white active:scale-[0.98] sm:px-4 sm:text-sm"
               >
                 ₹10 ({isFounder ? "4 cm²" : "2 cm²"})
               </button>
               <button
                 type="button"
                 onClick={() => openClaim("BELLY", 20, fastStep)}
-                className="btn-racing inline-flex h-11 flex-1 items-center justify-center gap-1.5 rounded-xl px-5 text-sm font-bold text-white transition-transform active:scale-[0.98] sm:flex-initial"
+                className="btn-racing inline-flex h-11 items-center justify-center gap-1.5 rounded-xl px-3 text-xs font-bold text-white transition-transform active:scale-[0.98] sm:px-5 sm:text-sm"
               >
-                <Zap className="h-4 w-4" /> ₹20 ({isFounder ? "8 cm²" : "4 cm²"})
+                <Zap className="h-4 w-4 shrink-0" /> ₹20 ({isFounder ? "8 cm²" : "4 cm²"})
               </button>
             </div>
           </div>
         </Reveal>
 
         {/* ── Unified Zone + Pricing Grid (5 Tiers + Custom) ── */}
-        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-6 grid gap-5 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
           {TIERS.map((t, i) => {
             const z = ZONE_MAP[t.zone];
             const sold = zoneSold(stats, z.id);
@@ -94,9 +95,11 @@ export function Tiers() {
 
             return (
               <Reveal key={t.amount} delay={i * 0.04}>
-                <div
+                <motion.div
+                  whileHover={{ y: -4 }}
+                  transition={{ type: "spring", stiffness: 260, damping: 22 }}
                   onMouseEnter={() => setActiveZone(z.id)}
-                  className={`relative flex h-full flex-col rounded-2xl border bg-[#11131A] p-5 transition-all hover:-translate-y-1 sm:p-6 ${
+                  className={`relative flex h-full flex-col rounded-2xl border bg-[#11131A] p-5 transition-colors sm:p-6 ${
                     isHighlighted
                       ? "card-pop-lg border-racing/70 ring-1 ring-racing/35"
                       : popular
@@ -142,7 +145,7 @@ export function Tiers() {
                     </span>
                   </div>
 
-                  <div className="mt-1 flex items-center justify-between gap-2 text-xs font-semibold text-muted-foreground">
+                  <div className="mt-1 flex flex-wrap items-center justify-between gap-x-2 gap-y-1 text-xs font-semibold text-muted-foreground">
                     <span className="flex items-center gap-1.5">
                       {vip ? <Crown className="h-3.5 w-3.5 text-[#F59E0B]" /> : <Rocket className="h-3.5 w-3.5 text-racing" />}
                       {IDENTITY_LINE[t.zone]}
@@ -184,7 +187,7 @@ export function Tiers() {
                   >
                     Claim {z.short} — {formatINR(t.amount)}
                   </button>
-                </div>
+                </motion.div>
               </Reveal>
             );
           })}

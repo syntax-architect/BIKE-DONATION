@@ -96,10 +96,10 @@ const SAMPLE_PREVIEW_TILES: WallTile[] = [
 ];
 
 const OPEN_SLOTS: Array<{ label: string; amount: 10 | 20 | 50; zone: ZoneId }> = [
-  { label: "Founder #001 (2× Area)", amount: 20, zone: "BELLY" },
+  { label: "Founder #001", amount: 20, zone: "BELLY" },
   { label: "Open ₹10 Lock", amount: 10, zone: "BELLY" },
-  { label: "Clickable @Page (₹50)", amount: 50, zone: "FAIRING" },
-  { label: "Bro / Couple Lock (₹20)", amount: 20, zone: "BELLY" },
+  { label: "@Page Link", amount: 50, zone: "FAIRING" },
+  { label: "Couple / Bro", amount: 20, zone: "BELLY" },
   { label: "Open ₹10 Lock", amount: 10, zone: "BELLY" },
   { label: "Open ₹20 Spot", amount: 20, zone: "BELLY" },
 ];
@@ -216,7 +216,7 @@ export function WrapWall() {
         />
 
         <Reveal delay={0.08} className="mt-8">
-          <div className="stage card-pop-lg relative overflow-hidden rounded-[2rem] border border-white/10 p-4 sm:p-6 lg:p-8">
+          <div className="stage card-pop-lg relative overflow-hidden rounded-2xl border border-white/10 p-3.5 sm:rounded-[2rem] sm:p-6 lg:p-8">
             <div aria-hidden className="bg-grid pointer-events-none absolute inset-0 opacity-40" />
 
             <div className="relative flex flex-col justify-between gap-3 border-b border-white/10 pb-4 sm:flex-row sm:items-center">
@@ -224,8 +224,9 @@ export function WrapWall() {
                 <Grid2x2 className="h-4 w-4 text-racing" />
                 <span>Live Wrap Directory</span>
                 {showingSamplePreview && (
-                  <span className="rounded-full border border-white/15 bg-white/5 px-2.5 py-0.5 text-[10px] font-semibold text-white/60">
-                    Sample Previews Shown — Live Claims Appear First
+                  <span className="rounded-full border border-white/15 bg-white/5 px-2.5 py-0.5 text-[10px] font-semibold text-white/65">
+                    <span className="sm:hidden">Sample Previews • Live First</span>
+                    <span className="hidden sm:inline">Sample Previews Shown — Live Claims Appear First</span>
                   </span>
                 )}
               </div>
@@ -236,7 +237,7 @@ export function WrapWall() {
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Find name, @handle, or city…"
                   aria-label="Search wrap directory"
-                  className="h-9 w-full rounded-full border border-white/15 bg-black/40 pl-8 pr-3 text-xs text-white placeholder:text-white/40 outline-none focus:border-racing"
+                  className="h-10 w-full rounded-full border border-white/15 bg-black/40 pl-8 pr-3 text-base text-white placeholder:text-white/40 outline-none focus:border-racing sm:h-9 sm:text-xs"
                 />
               </div>
             </div>
@@ -390,9 +391,11 @@ export function WrapWall() {
                       </div>
                       <div className="mt-0.5 text-[11px] text-white/50">{opt.desc}</div>
                       <div className="mt-2 h-1 overflow-hidden rounded-full bg-white/10">
-                        <div
-                          className="h-full rounded-full bg-racing transition-all duration-500"
-                          style={{ width: `${pct}%` }}
+                        <motion.div
+                          className="h-full rounded-full bg-racing"
+                          initial={{ width: 0 }}
+                          animate={{ width: `${pct}%` }}
+                          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                         />
                       </div>
                     </button>

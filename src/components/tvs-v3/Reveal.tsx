@@ -44,7 +44,7 @@ export function SectionHead({
       <div className="font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
         {eyebrow}
       </div>
-      <h2 className="mt-2 font-display text-3xl font-bold tracking-tight text-[#F8FAFC] sm:text-4xl lg:leading-[1.1]">
+      <h2 className="mt-2 font-display text-[1.65rem] font-bold leading-[1.15] tracking-tight text-[#F8FAFC] sm:text-4xl lg:leading-[1.1]">
         {title}
       </h2>
       {sub ? (
