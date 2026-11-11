@@ -2,10 +2,11 @@
 
 import { useMemo } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Crown, Flame, Medal, Trophy } from "lucide-react";
+import { CheckCircle2, Circle, Crown, Flame, Medal, Target, Trophy } from "lucide-react";
 import { ZONES, ZONE_MAP, formatINR } from "@/lib/tvs/constants";
+import { MILESTONES } from "@/lib/tvs/psych";
 import { SEED_TOP } from "@/lib/tvs/v3";
-import { recentFeed, useLiveStore, zoneSold, type FeedItem } from "@/lib/tvs/store";
+import { recentFeed, totalRaised, useLiveStore, zoneSold, type FeedItem } from "@/lib/tvs/store";
 import { SectionHead, Reveal } from "./Reveal";
 import { AnimatedNumber } from "./AnimatedNumber";
 
@@ -20,6 +21,7 @@ function ago(ts: number) {
 export function Telemetry() {
   const stats = useLiveStore((s) => s.stats);
   const sim = useLiveStore((s) => s.sim);
+  const raised = totalRaised(stats, sim);
   const feed = useMemo(() => recentFeed(stats, sim, 10), [stats, sim]);
 
   const top = useMemo(() => {
@@ -174,6 +176,58 @@ export function Telemetry() {
                     );
                   })}
                 </div>
+              </div>
+            </Reveal>
+
+            {/* goal-gradient unlock roadmap */}
+            <Reveal delay={0.18}>
+              <div className="glass card-pop rounded-2xl p-5 sm:p-6">
+                <div className="flex items-center justify-between">
+                  <h3 className="flex items-center gap-2 font-display text-lg font-bold">
+                    <Target className="h-5 w-5 text-racing" /> Unlock Roadmap
+                  </h3>
+                  <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                    Goal-gradient
+                  </span>
+                </div>
+                <ol className="mt-4 space-y-2.5">
+                  {MILESTONES.map((m, idx) => {
+                    const unlocked = raised >= m.at;
+                    const isNext =
+                      !unlocked && (idx === 0 || raised >= MILESTONES[idx - 1].at);
+                    return (
+                      <li
+                        key={m.at}
+                        className={`flex items-start gap-3 rounded-xl border px-3 py-2.5 text-xs transition-colors ${
+                          unlocked
+                            ? "border-volt/30 bg-volt/8"
+                            : isNext
+                              ? "border-racing/40 bg-racing/8"
+                              : "border-transparent bg-muted/40"
+                        }`}
+                      >
+                        {unlocked ? (
+                          <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-volt-bright" />
+                        ) : (
+                          <Circle
+                            className={`mt-0.5 h-4 w-4 shrink-0 ${
+                              isNext ? "text-racing" : "text-muted-foreground/50"
+                            }`}
+                          />
+                        )}
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center justify-between gap-2 font-semibold">
+                            <span className="truncate">{m.label}</span>
+                            <span className="tnum shrink-0 font-mono text-[11px]">
+                              {formatINR(m.at)}
+                            </span>
+                          </div>
+                          <p className="mt-0.5 text-[11px] text-muted-foreground">{m.desc}</p>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ol>
               </div>
             </Reveal>
           </div>

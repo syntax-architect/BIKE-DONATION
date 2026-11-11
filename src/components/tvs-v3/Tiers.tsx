@@ -1,13 +1,16 @@
 "use client";
 
-import { Check, Crown, Rocket, Sparkles } from "lucide-react";
+import { Check, Coffee, Crown, Rocket, Sparkles, Zap } from "lucide-react";
 import { TIERS, ZONE_MAP, formatINR, wrapAreaCm2 } from "@/lib/tvs/constants";
+import { IDENTITY_LINE, TIER_ANCHOR } from "@/lib/tvs/psych";
 import { badgeFor } from "@/lib/tvs/v3";
 import { useClaimStore } from "@/lib/tvs/store";
 import { SectionHead, Reveal } from "./Reveal";
 
 export function Tiers() {
   const openClaim = useClaimStore((s) => s.openClaim);
+  const previewName = useClaimStore((s) => s.previewName);
+  const fastStep = previewName.trim().length >= 2 ? "pay" : "details";
 
   return (
     <section id="pricing" className="scroll-mt-20">
@@ -19,10 +22,44 @@ export function Tiers() {
               Less than a pizza. <span className="text-racing">Printed on a superbike.</span>
             </>
           }
-          sub="₹5 buys one square centimetre of vinyl real estate. Pick a tier — or go custom and watch your cm² climb."
+          sub="₹5 buys one square centimetre of vinyl real estate. Skip one chai (₹10) or samosa (₹20) and ride on the Apache RR 310 forever."
         />
 
-        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {/* ── Featured ₹10 / ₹20 micro-impulse banner ── */}
+        <Reveal delay={0.05} className="mt-8">
+          <div className="glass card-pop flex flex-col items-start justify-between gap-4 rounded-2xl border-racing/30 bg-gradient-to-r from-racing/10 via-card to-volt/10 p-5 sm:flex-row sm:items-center sm:p-6">
+            <div className="max-w-xl">
+              <div className="inline-flex items-center gap-1.5 rounded-full bg-racing/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-racing">
+                <Coffee className="h-3 w-3" /> The ₹10–₹20 Chai Challenge
+              </div>
+              <h3 className="mt-2 font-display text-lg font-bold sm:text-xl">
+                Most people drop ₹10 or ₹20 without thinking twice.
+              </h3>
+              <p className="mt-1 text-xs leading-relaxed text-muted-foreground sm:text-sm">
+                One cutting chai = your name on the belly pan forever. Double it to ₹20 and get{" "}
+                <strong className="text-foreground">4 cm² of bold wrap real estate</strong>.
+              </p>
+            </div>
+            <div className="flex w-full shrink-0 flex-wrap gap-2 sm:w-auto">
+              <button
+                type="button"
+                onClick={() => openClaim("BELLY", 10, fastStep)}
+                className="inline-flex h-11 flex-1 items-center justify-center gap-1.5 rounded-xl border border-racing/40 bg-card px-4 text-sm font-bold text-racing transition-colors hover:bg-racing hover:text-white active:scale-[0.98] sm:flex-initial"
+              >
+                ₹10 • Chai Spot (2 cm²)
+              </button>
+              <button
+                type="button"
+                onClick={() => openClaim("BELLY", 20, fastStep)}
+                className="btn-racing inline-flex h-11 flex-1 items-center justify-center gap-1.5 rounded-xl px-5 text-sm font-bold text-white transition-transform active:scale-[0.98] sm:flex-initial"
+              >
+                <Zap className="h-4 w-4" /> ₹20 • Double Spot (4 cm²)
+              </button>
+            </div>
+          </div>
+        </Reveal>
+
+        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {TIERS.map((t, i) => {
             const z = ZONE_MAP[t.zone];
             const badge = badgeFor(t.amount);
@@ -63,9 +100,16 @@ export function Tiers() {
                     </span>
                   </div>
 
-                  <div className="mt-1 flex items-center gap-1.5 text-xs font-semibold text-muted-foreground">
-                    {vip ? <Crown className="h-3.5 w-3.5 text-vip-bright" /> : <Rocket className="h-3.5 w-3.5 text-racing" />}
-                    {badge.title}
+                  <div className="mt-1 flex items-center justify-between gap-2 text-xs font-semibold text-muted-foreground">
+                    <span className="flex items-center gap-1.5">
+                      {vip ? <Crown className="h-3.5 w-3.5 text-vip-bright" /> : <Rocket className="h-3.5 w-3.5 text-racing" />}
+                      {IDENTITY_LINE[t.zone]}
+                    </span>
+                    {TIER_ANCHOR[t.amount] ? (
+                      <span className="font-mono text-[11px] font-medium text-muted-foreground">
+                        {TIER_ANCHOR[t.amount]}
+                      </span>
+                    ) : null}
                   </div>
 
                   <ul className="mt-4 flex-1 space-y-2.5 text-sm">

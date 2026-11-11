@@ -17,26 +17,44 @@ export interface FeedItem {
 
 interface ClaimState {
   open: boolean;
+  sessionId: number;
   zoneId: ZoneId | null;
   amount: number | null;
+  startStep: "details" | "pay";
+  previewName: string;
+  previewHandle: string;
   claimedCode: string | null;
-  openClaim: (zone?: ZoneId, amount?: number) => void;
+  openClaim: (zone?: ZoneId | null, amount?: number | null, startStep?: "details" | "pay") => void;
   closeClaim: () => void;
   setZone: (z: ZoneId | null) => void;
   setAmount: (a: number | null) => void;
+  setPreviewName: (name: string) => void;
+  setPreviewHandle: (handle: string) => void;
   setClaimedCode: (c: string | null) => void;
 }
 
 export const useClaimStore = create<ClaimState>((set) => ({
   open: false,
+  sessionId: 0,
   zoneId: null,
   amount: null,
+  startStep: "details",
+  previewName: "",
+  previewHandle: "",
   claimedCode: null,
-  openClaim: (zone, amount) =>
-    set({ open: true, zoneId: zone ?? null, amount: amount ?? null }),
-  closeClaim: () => set({ open: false }),
+  openClaim: (zone, amount, startStep) =>
+    set((s) => ({
+      open: true,
+      sessionId: s.sessionId + 1,
+      zoneId: zone ?? null,
+      amount: amount ?? null,
+      startStep: startStep ?? "details",
+    })),
+  closeClaim: () => set({ open: false, startStep: "details" }),
   setZone: (zoneId) => set({ zoneId }),
   setAmount: (amount) => set({ amount }),
+  setPreviewName: (previewName) => set({ previewName }),
+  setPreviewHandle: (previewHandle) => set({ previewHandle }),
   setClaimedCode: (claimedCode) => set({ claimedCode }),
 }));
 

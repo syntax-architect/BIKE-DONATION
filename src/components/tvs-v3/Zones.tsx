@@ -2,6 +2,7 @@
 
 import { ArrowRight, MapPin } from "lucide-react";
 import { ZONES, formatINR } from "@/lib/tvs/constants";
+import { IDENTITY_LINE, ZONE_ANCHOR } from "@/lib/tvs/psych";
 import { useClaimStore, useLiveStore, zoneSold } from "@/lib/tvs/store";
 import { SectionHead, Reveal } from "./Reveal";
 
@@ -43,7 +44,7 @@ export function Zones() {
                       <div>
                         <h3 className="font-display text-base font-bold leading-tight">{z.short}</h3>
                         <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-                          {z.tierName}
+                          {IDENTITY_LINE[z.id]}
                         </span>
                       </div>
                     </div>
@@ -59,6 +60,9 @@ export function Zones() {
 
                   <p className="mt-4 flex-1 text-sm leading-relaxed text-muted-foreground">
                     {z.print}
+                  </p>
+                  <p className="mt-2.5 text-xs font-semibold text-foreground/80">
+                    {ZONE_ANCHOR[z.id]}
                   </p>
 
                   <div className="mt-5">

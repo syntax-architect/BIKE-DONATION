@@ -91,8 +91,8 @@ export const ZONE_MAP: Record<ZoneId, ZoneConfig> = Object.fromEntries(
 ) as Record<ZoneId, ZoneConfig>;
 
 export const TARGET = 400000;
-export const UPI_VPA = "peoplesapache@upi";
-export const UPI_PAYEE_NAME = "Apache310Wrap";
+export const UPI_VPA = process.env.NEXT_PUBLIC_UPI_VPA || "peoplesapache@upi";
+export const UPI_PAYEE_NAME = process.env.NEXT_PUBLIC_UPI_NAME || "Apache310Wrap";
 
 export const COST_BREAKDOWN = [
   { icon: "bike", label: "Bike Ex-Showroom & BTO Packs", amount: 315000, note: "Top-spec RR310 + BTO racing kit & aero winglets" },
@@ -141,6 +141,9 @@ export const TIERS = [
   { amount: 500, zone: "WINGLETS" as ZoneId, badge: null },
   { amount: 1000, zone: "COWL" as ZoneId, badge: "VIP" },
 ];
+
+/** Quick-pick rupee amounts in the claim modal (highlights ₹10 & ₹20 micro-entries) */
+export const QUICK_AMOUNTS = [10, 20, 50, 100, 500, 1000] as const;
 
 /** Wrap real-estate math: ₹5 buys 1 cm² of vinyl (min 2 cm²) */
 export function wrapAreaCm2(amount: number): number {

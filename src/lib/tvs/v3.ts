@@ -16,72 +16,64 @@ export interface GalleryShot {
 
 export const GALLERY: GalleryShot[] = [
   {
+    id: "studio-dyna",
+    src: "/bike/studio-dyna-clean.png",
+    label: "3/4 Aero",
+    caption: "Apache RR 310 — Racing Red with BTO aero winglets",
+    blend: false,
+  },
+  {
     id: "studio-side",
-    src: "/bike/studio-side.jpg",
-    label: "Studio Side",
-    caption: "Full profile — Racing Red, winglets to tail",
-    blend: true,
-  },
-  {
-    id: "rider",
-    src: "/bike/rider.jpg",
-    label: "Rider's Eye",
-    caption: "The pilot's point of view, full kit",
+    src: "/bike/studio-side-clean.png",
+    label: "Side Profile",
+    caption: "Full profile — every panel from tail cowl to belly pan",
     blend: false,
   },
   {
-    id: "track-side",
-    src: "/bike/track-side.jpg",
-    label: "On Track",
-    caption: "Bombay Black at the raceline",
+    id: "track-duo",
+    src: "/bike/track-duo.jpg",
+    label: "Track Pack",
+    caption: "Apache RR 310 BTO — Racing Red & Factory Race Replica",
     blend: false,
-    pos: "50% 62%",
-  },
-  {
-    id: "track-corner",
-    src: "/bike/track-corner.jpg",
-    label: "Full Lean",
-    caption: "Knee-down, winglets doing work",
-    blend: false,
-  },
-  {
-    id: "track-action",
-    src: "/bike/track-action.jpg",
-    label: "Track Attack",
-    caption: "Flat out down the main straight",
-    blend: false,
+    pos: "50% 45%",
   },
   {
     id: "front-view",
     src: "/bike/front-view.jpg",
     label: "Head On",
-    caption: "Twin-pod LED face + windscreen",
+    caption: "Twin-pod LED face, winglets & tall race windscreen",
+    blend: false,
+  },
+  {
+    id: "rider",
+    src: "/bike/rider.jpg",
+    label: "Rider's Eye",
+    caption: "On the tarmac — Racing Red RR 310 with carbon-look aero",
+    blend: false,
+  },
+  {
+    id: "track-action",
+    src: "/bike/track-action.jpg",
+    label: "Full Tuck",
+    caption: "Flat out down the straight on the RR 310",
     blend: false,
   },
   {
     id: "detail-dash",
     src: "/bike/detail-dash.jpg",
     label: "TFT Dash",
-    caption: "Full-metal instrument cluster, race telemetry",
-    blend: false,
-  },
-  {
-    id: "detail-headlight",
-    src: "/bike/detail-headlight.jpg",
-    label: "Night Face",
-    caption: "LED projector eyes under the carbon beak",
-    blend: false,
-  },
-  {
-    id: "detail-engine",
-    src: "/bike/detail-engine.jpg",
-    label: "Heart",
-    caption: "299.12 cc, reverse-inclined, 6-speed",
+    caption: "5-inch vertical race TFT cluster with telemetry",
     blend: false,
   },
 ];
 
-/** Interactive zones pinned to the STUDIO SIDE shot (850×1063, bike faces right) */
+export const HERO_ANGLES = [
+  { id: "studio-dyna", label: "3/4 Aero", src: "/bike/studio-dyna-clean.png", cutout: true },
+  { id: "studio-side", label: "Side", src: "/bike/studio-side-clean.png", cutout: true },
+  { id: "track-duo", label: "Track", src: "/bike/track-duo.jpg", cutout: false },
+] as const;
+
+/** Interactive zones pinned to the cropped studio PNGs */
 export interface Hotspot {
   zone: ZoneId;
   /** % position inside the image box */
@@ -92,11 +84,19 @@ export interface Hotspot {
 }
 
 export const SIDE_HOTSPOTS: Hotspot[] = [
-  { zone: "WINGLETS", x: 72, y: 38, side: "l" },
-  { zone: "TANK", x: 54, y: 41, side: "l" },
-  { zone: "FAIRING", x: 57, y: 51, side: "r" },
-  { zone: "BELLY", x: 52, y: 63, side: "r" },
-  { zone: "COWL", x: 15, y: 34, side: "r" },
+  { zone: "WINGLETS", x: 80, y: 39, side: "l" },
+  { zone: "TANK", x: 52, y: 24, side: "l" },
+  { zone: "FAIRING", x: 61, y: 55, side: "l" },
+  { zone: "BELLY", x: 57, y: 76, side: "l" },
+  { zone: "COWL", x: 16, y: 24, side: "r" },
+];
+
+export const DYNA_HOTSPOTS: Hotspot[] = [
+  { zone: "WINGLETS", x: 52, y: 38, side: "l" },
+  { zone: "TANK", x: 42, y: 20, side: "r" },
+  { zone: "FAIRING", x: 36, y: 50, side: "r" },
+  { zone: "BELLY", x: 47, y: 70, side: "l" },
+  { zone: "COWL", x: 20, y: 28, side: "r" },
 ];
 
 /** Baseline demo ledger so the page never looks empty (real claims stack on top) */

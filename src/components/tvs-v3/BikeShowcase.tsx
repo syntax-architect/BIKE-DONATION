@@ -5,17 +5,22 @@ import { useCallback, useMemo, useRef, useState, useSyncExternalStore } from "re
 import { AnimatePresence, motion, useMotionValue, useSpring } from "framer-motion";
 import { Move3d, X, Zap } from "lucide-react";
 import { ZONE_MAP, formatINR, type ZoneId } from "@/lib/tvs/constants";
-import { GALLERY, SIDE_HOTSPOTS, type Hotspot } from "@/lib/tvs/v3";
+import { DYNA_HOTSPOTS, GALLERY, SIDE_HOTSPOTS, type Hotspot } from "@/lib/tvs/v3";
 import { useClaimStore, useLiveStore, zoneSold } from "@/lib/tvs/store";
 import { SectionHead, Reveal } from "./Reveal";
+import { VinylSticker } from "./VinylSticker";
 
 const HOTSPOT_MAP: Record<string, Hotspot[]> = {
+  "studio-dyna": DYNA_HOTSPOTS,
   "studio-side": SIDE_HOTSPOTS,
 };
 
 const ASPECTS: Record<string, string> = {
-  "studio-side": "850 / 1063",
+  "studio-dyna": "697 / 725",
+  "studio-side": "802 / 493",
 };
+
+const CUTOUT_IDS = new Set(["studio-dyna", "studio-side"]);
 
 function HotspotPin({ spot, active, onToggle }: { spot: Hotspot; active: boolean; onToggle: () => void }) {
   const zone = ZONE_MAP[spot.zone];
@@ -107,6 +112,8 @@ export function BikeShowcase() {
   const [activeId, setActiveId] = useState(GALLERY[0].id);
   const [openSpot, setOpenSpot] = useState<ZoneId | null>(null);
   const stageRef = useRef<HTMLDivElement>(null);
+  const previewName = useClaimStore((s) => s.previewName);
+  const previewHandle = useClaimStore((s) => s.previewHandle);
 
   const canTilt = useSyncExternalStore(
     useCallback((cb: () => void) => {
@@ -149,7 +156,7 @@ export function BikeShowcase() {
               This is the <span className="text-racing">actual RR 310</span> you&rsquo;re funding.
             </>
           }
-          sub="No renders, no game graphics. Nine real angles of the machine that will carry 40,000 names. Tap the glowing pins on the studio shots — each one is a claimable zone."
+          sub="Seven real angles of the TVS Apache RR 310 — zero renders, zero unrelated models. Tap the glowing pins on the studio shots to see where your name rides."
         />
 
         {/* angle tabs */}
@@ -196,6 +203,8 @@ export function BikeShowcase() {
               <AnimatePresence>
                 {GALLERY.map((g) => {
                   const on = g.id === active.id;
+                  const isCutout = CUTOUT_IDS.has(g.id);
+                  const imgSpots = HOTSPOT_MAP[g.id] ?? [];
                   return (
                     <motion.div
                       key={g.id}
@@ -205,21 +214,40 @@ export function BikeShowcase() {
                       transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
                       style={{ pointerEvents: on ? "auto" : "none" }}
                     >
-                      {g.blend ? (
-                        // studio shots blend into the dark stage
-                        <div className="absolute inset-0 grid place-items-center">
+                      {isCutout ? (
+                        // Transparent studio cutout centered cleanly with soft elliptical ground shadow
+                        <div className="absolute inset-0 flex items-center justify-center px-6 pb-20 pt-8 sm:px-12 sm:pb-24 sm:pt-10">
                           <div
-                            className="relative h-full"
-                            style={{ aspectRatio: ASPECTS[g.id] ?? "850 / 1063" }}
+                            className={`relative w-full ${
+                              g.id === "studio-side" ? "max-w-[640px]" : "max-w-[440px]"
+                            }`}
+                            style={{ aspectRatio: ASPECTS[g.id] }}
                           >
+                            {/* soft studio floor shadow */}
+                            <div
+                              aria-hidden
+                              className="pointer-events-none absolute inset-x-[8%] -bottom-3 h-7 rounded-full bg-black/75 blur-xl"
+                            />
                             <Image
                               src={g.src}
                               alt={`TVS Apache RR 310 — ${g.caption}`}
                               fill
-                              loading={g.id === "studio-side" ? "eager" : "lazy"}
-                              sizes="(max-width: 640px) 90vw, 520px"
-                              className="mix-blend-lighten object-contain"
+                              loading={g.id === "studio-dyna" ? "eager" : "lazy"}
+                              sizes="(max-width: 640px) 90vw, 560px"
+                              className="object-contain drop-shadow-[0_24px_36px_rgba(0,0,0,0.7)]"
                             />
+                            {/* hotspots pinned directly inside the exact image aspect box */}
+                            {on &&
+                              imgSpots.map((spot) => (
+                                <HotspotPin
+                                  key={spot.zone}
+                                  spot={spot}
+                                  active={openSpot === spot.zone}
+                                  onToggle={() =>
+                                    setOpenSpot(openSpot === spot.zone ? null : spot.zone)
+                                  }
+                                />
+                              ))}
                           </div>
                         </div>
                       ) : (
@@ -241,15 +269,18 @@ export function BikeShowcase() {
                 })}
               </AnimatePresence>
 
-              {/* hotspots (studio angles only) */}
-              {spots.map((spot) => (
-                <HotspotPin
-                  key={spot.zone}
-                  spot={spot}
-                  active={openSpot === spot.zone}
-                  onToggle={() => setOpenSpot(openSpot === spot.zone ? null : spot.zone)}
-                />
-              ))}
+              {/* live user sticker preview overlay if they typed a name */}
+              {previewName.trim().length >= 2 && (
+                <div className="pointer-events-none absolute right-4 top-4 z-10 hidden sm:block">
+                  <VinylSticker
+                    name={previewName}
+                    handle={previewHandle}
+                    zone={openSpot ?? "BELLY"}
+                    amount={openSpot ? ZONE_MAP[openSpot].price : 20}
+                    className="w-[215px]"
+                  />
+                </div>
+              )}
             </motion.div>
 
             {/* caption bar */}
@@ -275,7 +306,7 @@ export function BikeShowcase() {
             {[
               ["38 HP", "peak power"],
               ["29 Nm", "torque"],
-              ["299.12 cc", "single cylinder"],
+              ["312.2 cc", "reverse-inclined DOHC"],
               ["6-Speed", "with slipper clutch"],
               ["174 kg", "kerb weight"],
               ["Dual-channel ABS", "BTO racing kit"],

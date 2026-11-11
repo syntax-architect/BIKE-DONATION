@@ -57,11 +57,44 @@ export const ZONE_ANCHOR: Record<ZoneId, string> = {
 /** Everyday-cost captions for the tier matrix. */
 export const TIER_ANCHOR: Record<number, string> = {
   10: "≈ one cutting chai",
-  50: "≈ one samosa party",
-  100: "≈ one movie night",
+  20: "≈ one samosa + chai",
+  50: "≈ one cold coffee",
+  100: "≈ one movie ticket",
   500: "≈ one food-delivery order",
   1000: "≈ one fancy dinner",
 };
+
+/** Goal-gradient helper: locate current unlocked & next upcoming milestone. */
+export function nextMilestone(raised: number) {
+  const nextIdx = MILESTONES.findIndex((m) => m.at > raised);
+  if (nextIdx === -1) {
+    const last = MILESTONES[MILESTONES.length - 1];
+    return {
+      current: last,
+      next: last,
+      prevAt: last.at,
+      remaining: 0,
+      pctToNext: 100,
+      chaiSpots: 0,
+      doubleSpots: 0,
+    };
+  }
+  const next = MILESTONES[nextIdx];
+  const current = nextIdx > 0 ? MILESTONES[nextIdx - 1] : null;
+  const prevAt = current?.at ?? 0;
+  const span = Math.max(1, next.at - prevAt);
+  const remaining = Math.max(0, next.at - raised);
+  const pctToNext = Math.min(100, Math.max(0, Math.round(((raised - prevAt) / span) * 1000) / 10));
+  return {
+    current,
+    next,
+    prevAt,
+    remaining,
+    pctToNext,
+    chaiSpots: Math.ceil(remaining / 10),
+    doubleSpots: Math.ceil(remaining / 20),
+  };
+}
 
 /** Scarcity urgency tone based on how full a zone is. */
 export function scarcityLine(sold: number, capacity: number): { text: string; tone: "hot" | "warm" | "cool" } {

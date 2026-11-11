@@ -7,6 +7,7 @@ import { Hero } from "./Hero";
 import { Ticker } from "./Ticker";
 import { StatsBand } from "./StatsBand";
 import { BikeShowcase } from "./BikeShowcase";
+import { WrapWall } from "./WrapWall";
 import { Zones } from "./Zones";
 import { Tiers } from "./Tiers";
 import { HowItWorks } from "./HowItWorks";
@@ -39,6 +40,7 @@ export function ExperimentV3() {
         <Ticker />
         <StatsBand />
         <BikeShowcase />
+        <WrapWall />
         <Zones />
         <Tiers />
         <HowItWorks />
