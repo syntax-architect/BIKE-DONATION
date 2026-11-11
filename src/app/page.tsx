@@ -1,5 +1,5 @@
-import { Experiment } from "@/components/tvs/Experiment";
+import { ExperimentV3 } from "@/components/tvs-v3/Experiment";
 
 export default function Home() {
-  return <Experiment />;
+  return <ExperimentV3 />;
 }

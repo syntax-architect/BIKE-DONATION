@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
+import { ThemeProvider } from "@/components/tvs-v3/Theme";
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space",
@@ -44,7 +45,10 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0a0a0c",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f6f7f9" },
+    { media: "(prefers-color-scheme: dark)", color: "#07080c" },
+  ],
   width: "device-width",
   initialScale: 1,
 };
@@ -55,12 +59,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} antialiased bg-background text-foreground font-sans`}
       >
-        {children}
-        <Toaster theme="dark" position="top-center" richColors closeButton />
+        <ThemeProvider>
+          {children}
+          <Toaster position="top-center" richColors closeButton />
+        </ThemeProvider>
       </body>
     </html>
   );

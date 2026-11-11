@@ -1,0 +1,106 @@
+// ── V2 psychological trigger layer ──────────────────────────────────────────
+// Milestone unlocks (goal-gradient), everyday anchors (relatability framing),
+// scarcity copy and momentum math shared by all V2 components.
+
+import type { ZoneId } from "./constants";
+
+export interface Milestone {
+  at: number;
+  label: string;
+  desc: string;
+  icon: "flag" | "wind" | "badge-check" | "printer" | "rocket";
+}
+
+/** Goal-gradient effect: visible unlock gates make progress feel inevitable. */
+export const MILESTONES: Milestone[] = [
+  {
+    at: 100000,
+    label: "Bike Booking Unlocked",
+    desc: "TVS dealership order placed in the community's name.",
+    icon: "flag",
+  },
+  {
+    at: 200000,
+    label: "BTO Aero Pack Confirmed",
+    desc: "Winglets + racing kit bolted onto the order.",
+    icon: "wind",
+  },
+  {
+    at: 315000,
+    label: "Ex-Showroom Cleared",
+    desc: "The bike is fully paid for. RTO & insurance next.",
+    icon: "badge-check",
+  },
+  {
+    at: 380000,
+    label: "Wrap Goes to Print",
+    desc: "Every claimed name is sent to the vinyl press.",
+    icon: "printer",
+  },
+  {
+    at: 400000,
+    label: "Launch-Day Livestream",
+    desc: "Unboxing + wrap reveal, live in 4K. Your name on screen.",
+    icon: "rocket",
+  },
+];
+
+/** Anchoring: price framed against everyday Indian spending. */
+export const ZONE_ANCHOR: Record<ZoneId, string> = {
+  BELLY: "Less than a cutting chai. Rides forever.",
+  FAIRING: "One samosa party → prime fairing inches.",
+  TANK: "Skip one movie night → own the pilot's tank.",
+  WINGLETS: "One food-delivery order → a rare aero blade.",
+  COWL: "One fancy dinner → your name in the biggest font.",
+};
+
+/** Everyday-cost captions for the tier matrix. */
+export const TIER_ANCHOR: Record<number, string> = {
+  10: "≈ one cutting chai",
+  50: "≈ one samosa party",
+  100: "≈ one movie night",
+  500: "≈ one food-delivery order",
+  1000: "≈ one fancy dinner",
+};
+
+/** Scarcity urgency tone based on how full a zone is. */
+export function scarcityLine(sold: number, capacity: number): { text: string; tone: "hot" | "warm" | "cool" } {
+  const left = Math.max(0, capacity - sold);
+  const pct = left / capacity;
+  if (left === 0) return { text: "SOLD OUT — waitlist only", tone: "hot" };
+  if (pct <= 0.15) return { text: `Only ${left} left — going fast`, tone: "hot" };
+  if (pct <= 0.45) return { text: `${left} spots open`, tone: "warm" };
+  return { text: `${left} spots open`, tone: "cool" };
+}
+
+/** Social identity framing: what the contributor "becomes" at each tier. */
+export const IDENTITY_LINE: Record<ZoneId, string> = {
+  BELLY: "Grid Founder",
+  FAIRING: "Billboard Backer",
+  TANK: "Pilot's Circle",
+  WINGLETS: "Aero Club",
+  COWL: "Title Sponsor",
+};
+
+/** Momentum math for the hero stat strip. */
+export function momentum(stats: {
+  totalRaised: number;
+  contributorCount: number;
+  recent: { amount: number; createdAt: string }[];
+}) {
+  const dayAgo = Date.now() - 24 * 60 * 60 * 1000;
+  const todayCount = stats.recent.filter((r) => new Date(r.createdAt).getTime() > dayAgo).length;
+  const avg =
+    stats.contributorCount > 0 ? Math.round(stats.totalRaised / stats.contributorCount) : 0;
+  return { todayCount, avg };
+}
+
+export function timeAgo(iso: string): string {
+  const s = Math.max(1, Math.floor((Date.now() - new Date(iso).getTime()) / 1000));
+  if (s < 60) return `${s}s ago`;
+  const m = Math.floor(s / 60);
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h ago`;
+  return `${Math.floor(h / 24)}d ago`;
+}
