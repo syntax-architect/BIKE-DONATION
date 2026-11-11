@@ -35,3 +35,4 @@ if (fs.existsSync(serverFile)) {
     console.log("[postbuild] Patched .next/standalone/server.js to bind 0.0.0.0 by default");
   }
 }
+
